@@ -1,0 +1,25 @@
+body{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 1vw;
+}
+
+button{
+    padding: 1vw 5vw;
+    border: .15vw solid black;
+    border-radius: .3vw;
+    background-color: white;
+    width: fit-content;
+}
+
+input{
+    width: 50vw !important;
+    padding: 1vw;
+    width: fit-content;
+    border: .15vw solid black;
+    border-radius: .3vw;
+    background-color: white;
+}

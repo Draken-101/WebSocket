@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./index.css">
+    <title>Web Socket</title>
+</head>
+
+<body>
+    <h1> Notificaciones </h1>
+    <ul id="notifications">
+
+    </ul>
+    <input type="text" placeholder="Enviar nuevo mensaje" id="message">
+    <button id="btn">Agregar</button>
+    <script>
+        const notifications = document.getElementById('notifications');
+        const btn = document.getElementById('btn');
+        const message = document.getElementById('message');
+        const Socket = new WebSocket('ws://localhost:8080');
+
+        Socket.onopen = () => {
+            console.log('¡Conectado! 🎧🔥');
+            console.log('¡Preparado para despegar hacia nuevas aventuras! 🚀✨');
+
+            Socket.send(JSON.stringify({
+                action: "getNotifications"
+            }));
+
+            btn.onclick = () => {
+                Socket.send(JSON.stringify({
+                    action: "createNotification",
+                    data: {
+                        message: message.value
+                    }
+                }))
+            }
+        }
+
+        Socket.onclose = () => {
+            console.log('¡Desconectado! 🎧🔥');
+            console.log('¡Bye! 🚀✨');
+        }
+
+        Socket.onmessage = (event) => {
+            console.log(event.data);
+            const dataJson = JSON.parse(event.data);
+
+            switch (dataJson.event) {
+                case 'getNotifications':
+                    const newNotifications = dataJson.data;
+
+                    printNotifications(newNotifications);
+                    break;
+                case "newNotification":
+                    printNotification(dataJson.data);
+                    break;
+            }
+        }
+
+        function printNotification(notification) {
+            const li = document.createElement("li");
+
+            li.innerText = notification.message;
+            notifications.appendChild(li)
+        }
+
+        function printNotifications(notifications) {
+            for (let noti of notifications) {
+                printNotification(noti);
+            }
+        }
+    </script>
+</body>
+
+</html>
