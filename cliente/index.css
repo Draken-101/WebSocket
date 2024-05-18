@@ -14,6 +14,15 @@ button{
     background-color: white;
     width: fit-content;
 }
+ul{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+li{
+    list-style: none;
+}
 
 input{
     width: 50vw !important;

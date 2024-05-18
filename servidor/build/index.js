@@ -1,60 +1,22 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const dataBase_1 = require("./dataBase");
 const ws_1 = require("ws");
-const wss = new ws_1.WebSocketServer({ port: 8080 }, () => {
-    console.log('¡Atento al puerto 8080! 🎧🔥');
-    console.log('¡Preparado para despegar hacia nuevas aventuras! 🚀✨');
-});
-const notifications = [
-    {
-        id: 1,
-        message: '🎉 ¡Gran noticia! Has sido seleccionado como el ganador de nuestro concurso. ¡Felicidades! 🏆✨'
-    },
-    {
-        id: 2,
-        message: '🚀 ¡Prepárate para una experiencia increíble! La cuenta regresiva ha comenzado. ⏳💥'
-    },
-    {
-        id: 3,
-        message: '💡 ¡Nuevas ideas están en camino! Mantén los ojos bien abiertos para emocionantes actualizaciones. 👀✨'
-    },
-    {
-        id: 4,
-        message: '📢 ¡Atención a todos! Una oportunidad única acaba de llegar a tu puerta. No te la pierdas. 🚪💼'
-    }
-];
-wss.on('connection', (ws) => {
-    console.log('🎉 ¡Gran noticia! Se conecto un nuevo usuario. 🏆✨');
-    ws.send(JSON.stringify({
-        message: '🚀 ¡Prepárate para una experiencia increíble! La cuenta regresiva ha comenzado. ⏳💥'
-    }));
-    ws.on('message', (data) => {
-        console.log("data: %s", data);
-        const dataJson = JSON.parse(data.toString());
-        switch (dataJson.action) {
-            case 'createNotification':
-                const newNotification = {
-                    id: notifications.length + 1,
-                    message: dataJson.data.message
-                };
-                notifications.push(newNotification);
-                wss.clients.forEach(client => {
-                    if (client.readyState === ws_1.WebSocket.OPEN) {
-                        client.send(JSON.stringify({
-                            event: "newNotification",
-                            data: newNotification
-                        }));
-                    }
-                });
-                break;
-            case 'getNotifications':
-                ws.send(JSON.stringify({
-                    event: "getNotifications",
-                    data: notifications
-                }));
-                break;
-            default:
-                console.log('No Actions Especifiqued');
-        }
+const http_1 = require("http");
+const express_1 = __importDefault(require("express"));
+const app = (0, express_1.default)();
+app.get("/ruta-http", (_req, res) => {
+    res.status(200).json({
+        message: "Respuesta http"
     });
+});
+const server = (0, http_1.createServer)(app);
+const wss = new ws_1.WebSocketServer({ server });
+wss.on('connection', (_ws) => { });
+server.listen(3000, () => {
+    (0, dataBase_1.runDB)();
+    console.log(`¡Todo en marcha y corriendo en el puerto 3000! 🚀🎉`);
 });
